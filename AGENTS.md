@@ -1,0 +1,3 @@
+# Family Art Pod
+
+Browser-only Solid artwork trial. Store photo bytes and permissions in the parent's Pod, never in an application database. Use synthetic artwork for development. Do not publish credentials, tokens, real family photos, provider account details or private Pod URLs in source, logs or website context. Only new app-managed collection/photo ACLs may be changed; keep all other Pod permissions intact. WAC only until ACP support is deliberately implemented and tested. Preserve owner Control and confirm private inheritance before upload. Run npm test and npm run build. Publication/deployment remains owner-authorized; directory submission and outreach require explicit authorization.

@@ -1,0 +1,9 @@
+{
+ "name": "family-art-pod", "version": "0.1.0", "private": true, "type": "module",
+ "description": "A Solid browser app for private family artwork and selected community sharing.",
+ "license": "MIT",
+ "scripts": {"build":"node build-parents.mjs && node prepare-trial-host.mjs", "test":"node --test", "dev":"node serve.mjs"},
+ "dependencies": {"@inrupt/solid-client":"4.0.0", "@inrupt/solid-client-authn-browser":"5.0.1"},
+ "devDependencies": {"esbuild":"0.28.2"},
+ "engines": {"node":">=22"}
+}
