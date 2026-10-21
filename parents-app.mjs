@@ -1,6 +1,7 @@
 import {getDefaultSession} from '@inrupt/solid-client-authn-browser';
 import {safeUrl,createCollection,uploadDrawing,privateAcl,solid} from './pod-core.mjs';
 const session=getDefaultSession(),$=id=>document.getElementById(id),fetcher=(...args)=>session.fetch(...args);
+try { $('issuer').value=localStorage.getItem('family-art:provider')||''; } catch {}
 let collection=null,urls=[],busy=false,viewed=null;
 const status=message=>{$('status').textContent=message};
 async function action(fn){if(busy)return;busy=true;document.querySelectorAll('button').forEach(b=>b.disabled=true);try{await fn()}catch(e){status(e.message||'Something went wrong. Try again.')}finally{busy=false;document.querySelectorAll('button').forEach(b=>b.disabled=false)}}
@@ -19,7 +20,7 @@ async function refresh(){clearImages();$('artworks').replaceChildren();if(!colle
  }
 }
 async function normalize(file){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024)throw Error('Choose a JPEG, PNG or WebP under 10 MB.');const bitmap=await createImageBitmap(file);if(bitmap.width*bitmap.height>40000000){bitmap.close();throw Error('Image dimensions are too large. Choose a smaller photo.')}const ratio=Math.min(1,2000/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*ratio));canvas.height=Math.max(1,Math.round(bitmap.height*ratio));const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('Could not prepare photo.')),'image/jpeg',.88))}
-$('connect').onclick=()=>action(async()=>{const issuer=safeUrl($('issuer').value.trim());if(location.pathname.replace(/\/$/,'')==='/community'&&$('resource').value)sessionStorage.setItem('pending-art',$('resource').value);await session.login({oidcIssuer:issuer,redirectUrl:location.origin+location.pathname,clientName:'Family Art · Solid experiment'});});
+$('connect').onclick=()=>action(async()=>{const issuer=safeUrl($('issuer').value.trim());localStorage.setItem('family-art:provider',issuer);if(location.pathname.replace(/\/$/,'')==='/community'&&$('resource').value)sessionStorage.setItem('pending-art',$('resource').value);await session.login({oidcIssuer:issuer,redirectUrl:location.origin+location.pathname,clientName:'Family Art · Solid experiment'});});
 $('logout').onclick=()=>action(async()=>{await session.logout();clearImages();location.assign('/')});
 $('create').onclick=()=>action(async()=>{collection=await createCollection($('root').value.trim(),session.info.webId,fetcher);localStorage.setItem(key(),collection);$('collection').textContent=collection;$('photo').disabled=false;status('Private collection ready. You can now add photos.');await refresh()});
 $('photo').onchange=()=>action(async()=>{const files=[...$('photo').files];for(const file of files){const blob=await normalize(file);await uploadDrawing(collection,session.info.webId,fetcher,blob)}$('photo').value='';status(`${files.length} photo(s) saved privately in your Pod.`);await refresh()});
@@ -28,4 +29,3 @@ await action(async()=>{await session.handleIncomingRedirect();if(location.search
 window.addEventListener('pagehide',clearImages);
 
 setInterval(async()=>{if(!viewed||busy)return;try{const r=await fetcher(viewed,{method:'HEAD',cache:'no-store'});if(!r.ok){clearImages();$('shared').replaceChildren();viewed=null;status('The drawing is no longer available to this identity. Access may have been revoked.')}}catch{clearImages();$('shared').replaceChildren();viewed=null;status('Unable to check Pod access. Reopen the drawing to retry.')}},5000);
-

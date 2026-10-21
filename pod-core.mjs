@@ -33,5 +33,3 @@ export async function uploadDrawing(collection,webId,fetcher,blob){
  await privateAcl(url,webId,fetcher);return url;
 }
 export {solid};
-
-
