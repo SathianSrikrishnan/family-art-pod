@@ -1,5 +1,18 @@
 # Verification — October 21, 2026
 
+## Parent trial candidate (codex/parent-trial-recovery)
+
+- 17 automated tests pass: cache-free recovery, stale/foreign cache rejection, multiple-folder selection, failed listing and retry, first-time setup, signed-out recipient gating, callback invitation handling, denied reads, invalid uploads, missing storage declarations, URL validation, and blocking photo transmission without editable WAC permissions.
+- Current core plus recovery passed six real local CSS checks with distinct synthetic identities: recover existing collection, private upload, selected-only exact-byte read, photo-write and ACL-write denial, failed upload, revoked GET/HEAD, intact owner access.
+- Actual browser preview at localhost:8775 connected to the existing synthetic CSS account, discovered existing folders without an app collection cache, opened a recovered folder and uploaded a sample privately. Local CSS does not declare pim:storage in this lab's profile; the explicit storage-address fallback was exercised.
+- Build succeeds; npm audit reports no known vulnerabilities. jsdom is development-only and is not bundled into the browser app.
+- Earlier public hosted release was tested with two distinct Private Data Pod identities: selected drawing visible, two unselected drawings denied, revocation automatically removes the image, reopening returns 403, owner retains all three. Exact private locators and screenshots remain in the local lab evidence, not this repository.
+- Candidate release gates: repeat fresh-browser recovery and sharing on Private Data Pod, and check a real phone. A second hosted provider is not verified. The trial guide deliberately limits provider claims.
+
+See [parent trial](PARENT-TRIAL.md). Historical initial-publication notes below describe the preceding release, not the candidate's verification gaps.
+
+## Historical initial release
+
 - Public parent and community routes serve browser assets over HTTPS, with no app-side family database or server-held Pod credentials.
 - Owner completed free Pod signup and app consent at Private Data Pod. Provider sign-in, storage discovery, a dedicated owner-only WAC collection and a sample-art JPEG upload succeeded through the public app.
 - The same collection and uploaded file appear in the provider's own authenticated file browser. This is evidence of provider-side storage outside the artwork app, not a general third-party-client interoperability claim.

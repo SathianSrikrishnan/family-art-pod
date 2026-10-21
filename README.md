@@ -23,8 +23,12 @@ Requires Node22+ and npm. Run npm ci, npm test, npm run build. The dist folder c
 
 Six real Community Solid Server checks in the originating local lab verified private uploads, anonymous denial, selected read-only access, unselected work remaining private and revocation with owner access preserved. Browser sign-in/upload/share/revoke also worked against that local server. Public HTTPS app routes and headers are verified. Hosted-provider end-to-end testing and independent-client interoperability are still in progress; this is not a broad compatibility claim.
 
-Reconnect after a page reload. Collection location is remembered per WebID in your browser; clearing browser storage removes that pointer, not Pod files. Recovery/browsing is future work. This is access control, not end-to-end encryption: the Pod host remains part of the trust model. No auctions, gifts, payments or returns are implemented. Not affiliated with or endorsed by Solid.
+Reconnect after a page reload. The revised candidate discovers app-managed artwork folders from the Pod after reconnection, even without the browser cache. A sole private owner-controlled folder opens automatically; several folders require a choice. Discovery failures stop setup rather than creating a duplicate. Renamed/moved or externally reconfigured folders may need help. See [parent trial gates](docs/PARENT-TRIAL.md) before inviting participants. This is access control, not end-to-end encryption: the Pod host remains part of the trust model. No auctions, gifts, payments or returns are implemented. Not affiliated with or endorsed by Solid.
 
 ## Contribute
 
 Useful contributions: reproducible provider compatibility reports using synthetic data, accessible onboarding, collection recovery, and an independent Solid client reading an intentionally shared sample. Do not put private Pod URLs, tokens, real child photos or account details in issues. Open an issue or propose a small pull request. MIT license; dependency licenses remain their own.
+
+## Candidate verification
+
+Run `npm test` for DOM/recovery checks and `npm run build` for static assets. `tools/verify-css.mjs` optionally tests the current core against an already-running synthetic CSS lab; it needs that lab’s local dependencies/seed file and never prints credentials. See [design](docs/2026-10-21-TRIAL-RECOVERY-DESIGN.md) and [trial plan](docs/PARENT-TRIAL.md). The live hosted two-identity share/revoke demonstration passed on the preceding release; fresh hosted acceptance of this candidate remains a release gate.
