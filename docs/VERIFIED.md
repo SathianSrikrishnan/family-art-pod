@@ -2,14 +2,16 @@
 
 ## Parent trial candidate (codex/parent-trial-recovery)
 
-Hosted acceptance exposed a text/html Pod root; the revised candidate adds an owner-only Pod index plus a one-time legacy-folder restore. This supersedes the earlier assumption that root listings alone suffice. Private index reads/writes and simultaneous updates passed real local CSS checks. Updated hosted candidate consent and legacy restore remain pending.
+Hosted acceptance exposed a text/html Pod root; the revised candidate adds an owner-only Pod index plus a one-time legacy-folder restore. This supersedes the earlier assumption that root listings alone suffice. Private index reads/writes and simultaneous updates passed real local CSS checks.
+
+Updated candidate hosted acceptance now passed: owner restored the original three-drawing folder once, shared one sample with the separate test recipient, revoked it, then reloaded/reconnected and recovered the original folder from the Pod index. All three drawings remain private and loaded for the owner. Recipient index/unselected reads were denied 403; signed-out library/index/photo reads were denied 401. This was a same-browser hosted reconnect; browser cache removal was blocked by browser policy and not bypassed. Empty-cache behavior is covered by automated tests. Recipient readback used its existing public viewer session; parent permission changes used the candidate.
 
 - 23 automated tests pass: cache-free recovery, stale/foreign cache rejection, multiple-folder selection, failed listing and retry, first-time setup, signed-out recipient gating, callback invitation handling, denied reads, invalid uploads, missing storage declarations, URL validation, and blocking photo transmission without editable WAC permissions.
 - Current core plus recovery passed eight real local CSS checks with distinct synthetic identities: recover existing collection, private upload, selected-only exact-byte read, photo-write and ACL-write denial, failed upload, revoked GET/HEAD, intact owner access.
 - Actual browser preview at localhost:8775 connected to the existing synthetic CSS account, discovered existing folders without an app collection cache, opened a recovered folder and uploaded a sample privately. Local CSS does not declare pim:storage in this lab's profile; the explicit storage-address fallback was exercised.
 - Build succeeds; npm audit reports no known vulnerabilities. jsdom is development-only and is not bundled into the browser app.
 - Earlier public hosted release was tested with two distinct Private Data Pod identities: selected drawing visible, two unselected drawings denied, revocation automatically removes the image, reopening returns 403, owner retains all three. Exact private locators and screenshots remain in the local lab evidence, not this repository.
-- Candidate release gates: repeat fresh-browser recovery and sharing on Private Data Pod, and check a real phone. A second hosted provider is not verified. The trial guide deliberately limits provider claims.
+- Remaining release gate: check a real phone. A truly fresh hosted browser is an additional useful acceptance pass; only automated empty-cache behavior and same-browser hosted reconnection have passed. A second hosted provider is not verified. The trial guide deliberately limits provider claims.
 
 See [parent trial](PARENT-TRIAL.md). Historical initial-publication notes below describe the preceding release, not the candidate's verification gaps.
 

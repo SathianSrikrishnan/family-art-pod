@@ -5,6 +5,7 @@ Start with 3–5 adults and sample drawings. Each parent and recipient needs the
 ## Before inviting anyone
 
 - Review and approve the candidate build for release; the existing public app has not been replaced by this branch.
+- Hosted candidate restore/reconnect and selected share/revoke have now passed with the original three synthetic drawings. The recipient cannot read the recovery index. Actual hosted browser-storage clearing was blocked; empty-storage cases passed the automated checks. Keep that distinction in trial reports.
 - On the candidate release, verify a fresh-browser recovery against Private Data Pod with the existing owner collection. Reconnect as the parent, not the test recipient. For older trial folders on Private Data Pod, restore the existing folder once so its address is recorded in the private app index. Confirm the same three drawings; no duplicate artwork folder. A dedicated private recovery library is expected.
 - Repeat the hosted share/revoke check on the candidate. The earlier hosted build passed this; the revised build has real local CSS checks, not a fresh hosted acceptance yet.
 - Check phone layout on a real phone and note provider/browser versions. Other hosted providers remain unverified.
