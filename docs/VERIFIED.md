@@ -2,8 +2,10 @@
 
 ## Parent trial candidate (codex/parent-trial-recovery)
 
-- 17 automated tests pass: cache-free recovery, stale/foreign cache rejection, multiple-folder selection, failed listing and retry, first-time setup, signed-out recipient gating, callback invitation handling, denied reads, invalid uploads, missing storage declarations, URL validation, and blocking photo transmission without editable WAC permissions.
-- Current core plus recovery passed six real local CSS checks with distinct synthetic identities: recover existing collection, private upload, selected-only exact-byte read, photo-write and ACL-write denial, failed upload, revoked GET/HEAD, intact owner access.
+Hosted acceptance exposed a text/html Pod root; the revised candidate adds an owner-only Pod index plus a one-time legacy-folder restore. This supersedes the earlier assumption that root listings alone suffice. Private index reads/writes and simultaneous updates passed real local CSS checks. Updated hosted candidate consent and legacy restore remain pending.
+
+- 23 automated tests pass: cache-free recovery, stale/foreign cache rejection, multiple-folder selection, failed listing and retry, first-time setup, signed-out recipient gating, callback invitation handling, denied reads, invalid uploads, missing storage declarations, URL validation, and blocking photo transmission without editable WAC permissions.
+- Current core plus recovery passed eight real local CSS checks with distinct synthetic identities: recover existing collection, private upload, selected-only exact-byte read, photo-write and ACL-write denial, failed upload, revoked GET/HEAD, intact owner access.
 - Actual browser preview at localhost:8775 connected to the existing synthetic CSS account, discovered existing folders without an app collection cache, opened a recovered folder and uploaded a sample privately. Local CSS does not declare pim:storage in this lab's profile; the explicit storage-address fallback was exercised.
 - Build succeeds; npm audit reports no known vulnerabilities. jsdom is development-only and is not bundled into the browser app.
 - Earlier public hosted release was tested with two distinct Private Data Pod identities: selected drawing visible, two unselected drawings denied, revocation automatically removes the image, reopening returns 403, owner retains all three. Exact private locators and screenshots remain in the local lab evidence, not this repository.

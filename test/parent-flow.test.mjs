@@ -10,12 +10,12 @@ function fakeApi({folders=[folder],fail=false}={}){return {
  getUrlAll:(d,p)=>p.endsWith('contains')?(d.url===root?folders:[]):[],getResourceInfoWithAcl:async()=>({}),getResourceAcl:()=>({}),
  getAgentResourceAccess:()=>({read:true,write:true,control:true}),getAgentDefaultAccessAll:()=>({[owner]:{control:true}}),getAgentResourceAccessAll:()=>({[owner]:{control:true}}),getThingAll:()=>[]
 };}
-async function setup({path='/',logged=true,api=fakeApi(),cached=null}={}){
+async function setup({path='/',logged=true,api=fakeApi(),cached=null,recovery={readCatalog:async()=>null,rememberCollection:async()=>{}}}={}){
  const dom=new JSDOM(html,{url:'https://art.example'+path});
  for(const name of ['window','document','location','history','localStorage','sessionStorage'])globalThis[name]=dom.window[name];
  if(cached)localStorage.setItem('family-art:'+owner,cached);
  const session={info:{isLoggedIn:logged,webId:logged?owner:undefined},handleIncomingRedirect:async()=>{},fetch:async()=>new Response('',{status:403}),login:async()=>{throw Error('Failed to fetch');}};
- const app=await mountApp(session,api);return {dom,session,app,$:id=>dom.window.document.getElementById(id)};
+ const app=await mountApp(session,api,recovery);return {dom,session,app,$:id=>dom.window.document.getElementById(id)};
 }
 const settle=()=>new Promise(resolve=>setTimeout(resolve,25));
 test('fresh browser recovers existing artwork without creating a folder',async()=>{const t=await setup();try{assert.equal(t.$('collection').textContent,folder);assert(t.$('setup').hidden);assert(!t.$('photo').disabled);assert.equal(localStorage.getItem('family-art:'+owner),folder);}finally{t.app.dispose();t.dom.window.close();}});
@@ -26,3 +26,6 @@ test('signed-out recipient cannot open a drawing; provider URL is prefilled',asy
 test('invitation survives callback and denied recipient gets an actionable message',async()=>{const t=await setup({path:'/community#art='+encodeURIComponent(folder+'drawing.jpg')});try{assert.equal(t.$('resource').value,folder+'drawing.jpg');t.$('view').click();await settle();assert.match(t.$('status').textContent,/exact WebID/);assert.equal(t.$('shared').children.length,0);assert(!t.$('view').disabled);}finally{t.app.dispose();t.dom.window.close();}});
 test('invalid photo reports zero saved and leaves upload ready to retry',async()=>{const t=await setup();try{Object.defineProperty(t.$('photo'),'files',{value:[{type:'application/pdf',size:10}],configurable:true});t.$('photo').dispatchEvent(new window.Event('change'));await settle();assert.match(t.$('status').textContent,/0 of 1 photos saved/);assert(!t.$('photo').disabled);}finally{t.app.dispose();t.dom.window.close();}});
 test('provider without a storage declaration offers a verified manual recovery path',async()=>{const api=fakeApi();api.getPodUrlAll=async()=>[];const t=await setup({api});try{assert(!t.$('manual-storage').hidden);assert(t.$('create').disabled);t.$('manual-root').value=root;t.$('retry').click();await settle();assert.equal(t.$('collection').textContent,folder);assert(!t.$('photo').disabled);}finally{t.app.dispose();t.dom.window.close();}});
+test('HTML root offers explicit legacy recovery and validates the chosen owner folder',async()=>{const api=fakeApi();api.getSolidDataset=async url=>{if(url===root)throw Error('MIME type text/html');return {url};};const t=await setup({api});try{assert(!t.$('legacy-recovery').hidden);assert(t.$('photo').disabled);assert(!t.$('create').disabled);t.$('restore-url').value='https://foreign.example/';t.$('restore').click();await settle();assert.match(t.$('status').textContent,/not a private artwork folder/);t.$('restore-url').value=folder;t.$('restore').click();await settle();assert.equal(t.$('collection').textContent,folder);assert(!t.$('photo').disabled);}finally{t.app.dispose();t.dom.window.close();}});
+
+test('private index restores a fresh browser without requesting an HTML root listing',async()=>{const api=fakeApi();api.getSolidDataset=async url=>{assert.notEqual(url,root);return {url};};const t=await setup({api,recovery:{readCatalog:async()=>({collections:[folder]}),rememberCollection:async()=>{}}});try{assert.equal(t.$('collection').textContent,folder);assert(!t.$('photo').disabled);assert(t.$('legacy-recovery').hidden);}finally{t.app.dispose();t.dom.window.close();}});

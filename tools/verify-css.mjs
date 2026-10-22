@@ -7,6 +7,7 @@ import {pathToFileURL} from 'node:url';
 import assert from 'node:assert/strict';
 import {createCollection,uploadDrawing,privateAcl} from '../pod-core.mjs';
 import {discoverCollections,chooseCollection} from '../collection-recovery.mjs';
+import {rememberCollection,readCatalog,catalogUrl} from '../pod-catalog.mjs';
 const lab=resolve(process.argv[2]||'../solid-family-memory-lab');
 const require=createRequire(pathToFileURL(resolve(lab,'package.json')));
 const {Session}=await import(pathToFileURL(require.resolve('@inrupt/solid-client-authn-node')).href);
@@ -28,6 +29,8 @@ try{
  const bytes=await readFile(resolve(lab,'samples/family.jpg')),blob=new Blob([bytes],{type:'image/jpeg'});
  const drawing=await uploadDrawing(collection,webId,f,blob),other=await uploadDrawing(collection,webId,f,blob);
  await check('recovery discovers the real private collection without a browser cache',async()=>{const found=await discoverCollections([base+'parent/'],webId,f);assert(found.includes(collection));assert.equal(chooseCollection([collection],null),collection);assert.equal((await owner.fetch(drawing)).status,200);});
+ await check('private Pod index restores artwork without any root listing or browser cache',async()=>{await rememberCollection(base+'parent/',collection,webId,f);const saved=await readCatalog(base+'parent/',webId,f);assert(saved.collections.includes(collection));denied(await fetch(catalogUrl(base+'parent/')));denied(await reader.fetch(catalogUrl(base+'parent/')));denied(await fetch(new URL('index.json',catalogUrl(base+'parent/'))));denied(await reader.fetch(new URL('index.json',catalogUrl(base+'parent/'))));await rememberCollection(base+'parent/',collection,webId,f);assert.equal((await readCatalog(base+'parent/',webId,f)).collections.filter(url=>url===collection).length,1);});
+ await check('concurrent index updates preserve both folders with conditional writes',async()=>{const a=await createCollection(base+'parent/',webId,f),b=await createCollection(base+'parent/',webId,f);await Promise.all([rememberCollection(base+'parent/',a,webId,f),rememberCollection(base+'parent/',b,webId,f)]);const saved=await readCatalog(base+'parent/',webId,f);assert(saved.collections.includes(a));assert(saved.collections.includes(b));assert(saved.collections.includes(collection));});
  await check('anonymous and unselected identity cannot read a new upload',async()=>{denied(await fetch(drawing));denied(await reader.fetch(drawing));});
  await privateAcl(drawing,webId,f,false,reader.info.webId);
  await check('selected reader receives exact bytes while unselected drawing stays private',async()=>{assert.deepEqual(Buffer.from(await (await reader.fetch(drawing)).arrayBuffer()),bytes);denied(await reader.fetch(other));denied(await fetch(drawing));});

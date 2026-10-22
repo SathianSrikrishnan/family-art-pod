@@ -5,7 +5,7 @@ Start with 3–5 adults and sample drawings. Each parent and recipient needs the
 ## Before inviting anyone
 
 - Review and approve the candidate build for release; the existing public app has not been replaced by this branch.
-- On the candidate release, verify a fresh-browser recovery against Private Data Pod with the existing owner collection. Reconnect as the parent, not the test recipient. Confirm the same three drawings and no new folder.
+- On the candidate release, verify a fresh-browser recovery against Private Data Pod with the existing owner collection. Reconnect as the parent, not the test recipient. For older trial folders on Private Data Pod, restore the existing folder once so its address is recorded in the private app index. Confirm the same three drawings; no duplicate artwork folder. A dedicated private recovery library is expected.
 - Repeat the hosted share/revoke check on the candidate. The earlier hosted build passed this; the revised build has real local CSS checks, not a fresh hosted acceptance yet.
 - Check phone layout on a real phone and note provider/browser versions. Other hosted providers remain unverified.
 - Keep the previous deployment available for rollback. Send no invitations until these gates pass.
@@ -32,4 +32,4 @@ Success: each participant completes save/share/revoke/recovery without a live wa
 
 ## Limits to explain
 
-One recipient per drawing; sharing with another replaces the earlier recipient. WAC only; ACP-only upload is blocked. Provider operators remain trusted; this is not end-to-end encryption. No payment, auction or public gallery. Folder discovery covers direct `family-art-UUID/` folders with private owner-controlled ACLs, including the original app's folders. Renamed/moved folders, inaccessible listings or externally changed ACLs can require help. The app never repairs root or unrelated folder permissions during recovery.
+One recipient per drawing; sharing with another replaces the earlier recipient. WAC only; ACP-only upload is blocked. Provider operators remain trusted; this is not end-to-end encryption. No payment, auction or public gallery. Folder discovery covers direct `family-art-UUID/` folders with private owner-controlled ACLs, including the original app's folders. Renamed/moved folders, inaccessible listings or externally changed ACLs can require help. The app never repairs root or unrelated folder permissions during recovery. It maintains a private folder-address index in its dedicated family-art-library-v1 collection. Providers with an HTML root need a one-time restore for artwork saved before this index existed; new trial parents have the index created during setup.
